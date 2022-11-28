@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace SymLinkMirror
 {
-	public static class SymLinkUtilities
+	public static partial class SymLinkUtilities
 	{
 		// ------------------------------------------------------------
 		// API declarations
@@ -16,9 +16,11 @@ namespace SymLinkMirror
 			Directory = 1,
 		}
 
-		[DllImport("kernel32.dll", EntryPoint = "CreateSymbolicLinkW", CharSet = CharSet.Unicode, SetLastError = true)]
+		[LibraryImport("kernel32.dll", EntryPoint = "CreateSymbolicLinkW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
 		[return: MarshalAs(UnmanagedType.I1)]
-		private static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLinkFlag dwFlags);
+		private static partial bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLinkFlag dwFlags);
+
+		private static readonly EnumerationOptions _enumerationOptions = new();
 
 		// ------------------------------------------------------------
 		// Custom exceptions
@@ -65,11 +67,11 @@ namespace SymLinkMirror
 				Directory.CreateDirectory(destination);
 
 			// First, mirror all files in this folder.
-			foreach (FileInfo sourceFile in source.EnumerateFiles())
+			foreach (FileInfo sourceFile in source.EnumerateFiles("*", _enumerationOptions))
 				sourceFile.SymLinkTo(Path.Combine(destination, sourceFile.Name));
 
 			// Then, recursively mirror all of the subfolders of this folder.
-			foreach (DirectoryInfo sourceFolder in source.EnumerateDirectories())
+			foreach (DirectoryInfo sourceFolder in source.EnumerateDirectories("*", _enumerationOptions))
 				sourceFolder.MirrorUsingSymLinks(Path.Combine(destination, sourceFolder.Name));
 		}
 

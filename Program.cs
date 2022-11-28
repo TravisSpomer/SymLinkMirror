@@ -3,7 +3,7 @@ using System.IO;
 using SymLinkMirror;
 
 Console.WriteLine("SymLinkMirror");
-Console.WriteLine("(c) 2011-2021 Travis Spomer");
+Console.WriteLine("(c) 2011-2022 Travis Spomer");
 Console.WriteLine();
 
 // First, check the arguments.
@@ -58,6 +58,7 @@ static void PrintUsage()
 	Console.WriteLine(@"    SymLinkMirror ""Source path"" ""Destination path""");
 	Console.WriteLine();
 	Console.WriteLine("Symbolic links must be created from an administrator command prompt.");
+	Console.WriteLine("Hidden system files and inaccessible files are skipped.");
 	Console.WriteLine();
 }
 
